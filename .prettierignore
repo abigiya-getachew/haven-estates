@@ -1,0 +1,29 @@
+# dependencies
+node_modules
+
+# build output
+.next
+out
+build
+
+# generated and cached files
+next-env.d.ts
+*.tsbuildinfo
+.eslintcache
+
+# test output
+coverage
+playwright-report
+test-results
+
+# environment files
+.env
+.env.local
+.env.*.local
+
+# logs and editor files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.DS_Store
