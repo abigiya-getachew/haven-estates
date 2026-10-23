@@ -43,3 +43,9 @@ next-env.d.ts
 
 # eslint
 .eslintcache
+
+
+/.agents/
+/.aider-desk/
+/.taste-skill/
+/docs
