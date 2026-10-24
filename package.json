@@ -7,8 +7,8 @@
     "node": ">=20.9.0"
   },
   "scripts": {
-    "dev": "node scripts/next.mjs dev",
     "build": "node scripts/next.mjs build",
+    "dev": "node scripts/next.mjs dev",
     "start": "node scripts/next.mjs start",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -21,12 +21,12 @@
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx scripts/seed-neon.mjs",
-    "check": "npm run lint && npm run typecheck && npm run test"
+    "check": "npm run lint && npm run typecheck && npm run test",
+    "deploy": "vercel"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
-    "@supabase/ssr": "^0.12.7",
-    "@supabase/supabase-js": "^2.118.0",
+    "@opennextjs/cloudflare": "^1.20.13",
     "drizzle-orm": "^0.45.4",
     "next": "16.4.2",
     "react": "19.3.0",
@@ -51,6 +51,7 @@
     "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vitest": "^5.0.5"
+    "vitest": "^5.0.5",
+    "wrangler": "^4.152.0"
   }
 }

@@ -6,8 +6,6 @@ describe("parseClientEnv", () => {
   it("accepts a complete public configuration", () => {
     const env = parseClientEnv({
       NEXT_PUBLIC_SITE_URL: "https://haven.example.com",
-      NEXT_PUBLIC_SUPABASE_URL: "https://abc.supabase.co",
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: "publishable-key",
     });
 
     expect(env.NEXT_PUBLIC_SITE_URL).toBe("https://haven.example.com");

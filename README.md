@@ -1,32 +1,26 @@
 # HAVEN Estates Addis
 
 Website for HAVEN Estates Addis, a residential property agency in Addis Ababa.
-Built with Next.js (App Router), React, TypeScript, and Tailwind CSS, with
-Supabase providing PostgreSQL, authentication, and image storage.
+Built with Next.js (App Router), React, TypeScript, and Tailwind CSS, with a
+Neon PostgreSQL database accessed through Drizzle ORM.
 
-The product and technical specifications live in [`docs/`](./docs):
-
-| Document                                             | Purpose                                                 |
-| ---------------------------------------------------- | ------------------------------------------------------- |
-| [`docs/PRD.md`](./docs/PRD.md)                       | Product scope, users, journeys, functional requirements |
-| [`docs/DESIGN.md`](./docs/DESIGN.md)                 | Visual design, components, interaction, accessibility   |
-| [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)     | Stack, structure, data flow, security boundaries        |
-| [`docs/DATABASE.md`](./docs/DATABASE.md)             | Schema, constraints, indexes, access policies           |
-| [`docs/API.md`](./docs/API.md)                       | Endpoint contracts, validation, error conventions       |
-| [`docs/AGENTS.md`](./docs/AGENTS.md)                 | Coding rules and working agreements                     |
-| [`docs/IMPLEMENTATION.md`](./docs/IMPLEMENTATION.md) | Phased delivery plan                                    |
+The product and technical specifications live in `docs/` (PRD, DESIGN,
+ARCHITECTURE, DATABASE, API, AGENTS, IMPLEMENTATION). That directory is
+git-ignored: it is kept locally for reference and is **not** tracked in the
+repository. Treat it as private working documentation rather than as a
+committed source of truth.
 
 ## Requirements
 
 - Node.js 20.9 or newer (developed against Node 24)
 - npm 10 or newer
-- A Supabase project (database URL and publishable key)
+- A Neon PostgreSQL project (database URL)
 
 ## Getting started
 
 ```bash
 npm install
-cp .env.example .env.local   # then fill in the Supabase values
+cp .env.example .env.local   # then fill in the Neon DATABASE_URL
 npm run env:check             # verifies the configuration
 npm run dev                   # http://localhost:3000
 ```
@@ -48,6 +42,9 @@ npm run dev                   # http://localhost:3000
 | `npm run test`         | Run the unit and component test suites                                      |
 | `npm run test:watch`   | Run the test suites in watch mode                                           |
 | `npm run env:check`    | Validate environment configuration                                          |
+| `npm run db:generate`  | Generate a new Drizzle migration from the current schema                    |
+| `npm run db:push`      | Apply pending migrations to the Neon database                               |
+| `npm run db:seed`      | Seed the database with sample property data                                 |
 | `npm run check`        | Lint, type check, and test in one command                                   |
 
 `npm run check` mirrors the quality gates in `ARCHITECTURE.md` 18.6 and is the
@@ -58,16 +55,14 @@ command to run before every commit.
 Only the variables for services that are actually used should be defined
 (`ARCHITECTURE.md` 13.2, `API.md` 14).
 
-| Variable                        | Required                                   | Purpose                                                      | Exposure                                   |
-| ------------------------------- | ------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------ |
-| `NEXT_PUBLIC_SITE_URL`          | Yes                                        | Canonical site URL for metadata, sitemap, and absolute links | Public                                     |
-| `NEXT_PUBLIC_SUPABASE_URL`      | Yes                                        | Supabase project URL                                         | Public                                     |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes                                        | Supabase publishable/anonymous key                           | Public                                     |
-| `SUPABASE_SERVICE_ROLE_KEY`     | Only for privileged server operations      | Trusted server-side database and storage access              | Server only                                |
-| `RESEND_API_KEY`                | Only if Resend is selected                 | Transactional email authentication                           | Server only                                |
-| `CONTACT_EMAIL_TO`              | Only if email notifications are enabled    | Agency notification destination                              | Server only                                |
-| `ADMIN_EMAIL_ALLOWLIST`         | If that authorisation approach is selected | Approved administrator identities                            | Server only                                |
-| `WHATSAPP_BUSINESS_NUMBER`      | If configured server-side                  | Agency WhatsApp number                                       | Server-side configuration, safe to publish |
+| Variable                   | Required                                   | Purpose                                                      | Exposure                                   |
+| -------------------------- | ------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------ |
+| `NEXT_PUBLIC_SITE_URL`     | Yes                                        | Canonical site URL for metadata, sitemap, and absolute links | Public                                     |
+| `DATABASE_URL`             | Yes                                        | Neon PostgreSQL connection string                            | Server only                                |
+| `RESEND_API_KEY`           | Only if Resend is selected                 | Transactional email authentication                           | Server only                                |
+| `CONTACT_EMAIL_TO`         | Only if email notifications are enabled    | Agency notification destination                              | Server only                                |
+| `ADMIN_EMAIL_ALLOWLIST`    | If that authorisation approach is selected | Approved administrator identities                            | Server only                                |
+| `WHATSAPP_BUSINESS_NUMBER` | If configured server-side                  | Agency WhatsApp number                                       | Server-side configuration, safe to publish |
 
 Configuration is parsed and validated in `src/lib/env.ts`. Values are never
 read at import time, so a missing variable produces a clear error at the point
@@ -78,7 +73,7 @@ missing or invalid variable at once.
 
 ```text
 haven-estates-addis/
-├── docs/                     # Product and technical specifications
+├── docs/                     # Product and technical specifications (git-ignored)
 ├── public/                   # Static assets, including self-hosted fonts
 ├── scripts/                  # Repository maintenance scripts
 ├── src/
@@ -97,7 +92,7 @@ haven-estates-addis/
 │   │   ├── layout/           # Header, footer, and navigation
 │   │   └── ui/               # Generic reusable interface elements
 │   ├── lib/                  # Infrastructure clients and shared utilities
-│   │   └── supabase/         # Browser and server Supabase clients
+│   │   └── db/               # Drizzle ORM schema, queries, and database service
 │   └── types/                # Shared application and database types
 ├── tests/
 │   ├── component/            # Component tests
@@ -132,13 +127,13 @@ missing.
 
 ## Deployment
 
-The application targets Vercel with Supabase for PostgreSQL, authentication,
-and image storage (`ARCHITECTURE.md` 19.1). Production environment variables
-are configured in the hosting provider, never in the repository. The canonical
+The application targets Vercel with a Neon PostgreSQL database accessed through
+Drizzle ORM (`ARCHITECTURE.md` 19.1). Production environment variables are
+configured in the hosting provider, never in the repository. The canonical
 production URL must be set as `NEXT_PUBLIC_SITE_URL`.
 
-Database migrations are version controlled under `supabase/migrations/` and are
-applied through a controlled process rather than by editing the live database.
+Database migrations are version controlled under `drizzle/` and are applied
+through `npm run db:push` rather than by editing the live database.
 
 ## Known environment issue
 

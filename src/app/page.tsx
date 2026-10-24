@@ -3,6 +3,7 @@ import { getSiteContact } from "@/lib/env";
 import { getFeaturedProperties, type PropertySummary } from "@/lib/db/queries";
 
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { constructMetadata } from "@/lib/metadata";
 import { getSiteUrl } from "@/lib/env";
 
@@ -25,6 +26,7 @@ export const metadata: Metadata = constructMetadata({
  * 4. The Invitation — Find Your Place (Monumental Twilight Doorway & Verified Inquiry)
  */
 export default async function HomePage() {
+  await connection();
   const { whatsappNumber, contactEmail } = getSiteContact();
   let featuredProperties: PropertySummary[] = [];
   try {

@@ -22,7 +22,7 @@ const args = process.argv.slice(2);
 
 const child = spawn(process.execPath, [nextBin, ...args], {
   stdio: "inherit",
-  env: process.env,
+  env: { ...process.env, NODE_OPTIONS: "--dns-result-order=ipv4first" },
 });
 
 child.on("exit", (code, signal) => {

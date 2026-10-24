@@ -18,15 +18,9 @@ const { loadEnvConfig } = nextEnv;
 // loads for the application itself.
 loadEnvConfig(process.cwd(), process.env.NODE_ENV !== "production");
 
-const REQUIRED_VARIABLES = [
-  "NEXT_PUBLIC_SITE_URL",
-  "NEXT_PUBLIC_SUPABASE_URL",
-  "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-];
+const REQUIRED_VARIABLES = ["NEXT_PUBLIC_SITE_URL", "DATABASE_URL"];
 
 const OPTIONAL_VARIABLES = [
-  "DATABASE_URL",
-  "SUPABASE_SERVICE_ROLE_KEY",
   "RESEND_API_KEY",
   "CONTACT_EMAIL_TO",
   "ADMIN_EMAIL_ALLOWLIST",
